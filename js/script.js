@@ -5,7 +5,6 @@ let icedCoffeeList;
 let hotCoffeeList;
 let foodMenuList;
 let cartId = 0;
-
 cartId = sessionStorage.getItem("idValue")
 
 const hotCoffee = [
@@ -29,11 +28,11 @@ const icedCoffee = [
 ]
 
 const foodMenu = [
-    {"name": "Banana Wallnut Loaf", "price":[79.00, 459.00], "size":["Solo", "1 box (6pcs)"], "pic": "food1.png"},
-    {"name": "Blueberry Muffin", "price": [59.00, 399.00], "size":["Solo", "1 box (6pcs)"], "pic": "food2.png"},
-    {"name": "Chocolate Chip Cookie", "price": [39.00, 219.00], "size":["Solo", "1 box (6pcs)"], "pic": "food3.png"},
-    {"name": "Double Chocolate Brownie", "price": [89.00, 499.00], "size":["Solo", "1 box (6pcs)"], "pic": "food4.png"},
-    {"name": "Glazed Doughnut", "price": [49.00, 269.00], "size":["Solo", "1 box (6pcs)"], "pic": "food5.png"},
+    {"name": "Banana Wallnut Loaf", "price":[79.00, 459.00], "size":["1pc", "1 box (6pcs)"], "pic": "food1.png"},
+    {"name": "Blueberry Muffin", "price": [59.00, 399.00], "size":["1pc", "1 box (6pcs)"], "pic": "food2.png"},
+    {"name": "Chocolate Chip Cookie", "price": [39.00, 219.00], "size":["1pc", "1 box (6pcs)"], "pic": "food3.png"},
+    {"name": "Double Chocolate Brownie", "price": [89.00, 499.00], "size":["1pc", "1 box (6pcs)"], "pic": "food4.png"},
+    {"name": "Glazed Doughnut", "price": [49.00, 269.00], "size":["1pc", "1 box (6pcs)"], "pic": "food5.png"},
 ]
 
 const Mocafe = {"menu": [hotCoffeeList, icedCoffeeList, foodMenuList], "list": [hotCoffee, icedCoffee, foodMenu], "x":[hot, iced, food] }
@@ -73,9 +72,17 @@ const menuOption = (wew, cof, x) => {
                                 <label class="btn btn-secondary" for="option${x}${i}">${cof[i].size[0]}</label>
                                 <input type="radio" class="btn-check btn-size" name="options${i}" id="${x}${i}${i}" value="${cof[i].price[1]}" autocomplete="off">
                                 <label class="btn btn-secondary" for="${x}${i}${i}">${cof[i].size[1]}</label>
-                                <div class="d-flex col-10 justify-content-between coffee-priceList">
-                                    <span class="coffee-price">${cof[i].price[0].toFixed(2)}</span>
-                                    <span class="coffee-size d-none">${cof[i].size[0]}</span>
+                                <div class="d-flex justify-content-between d-block col-12 coffee-priceList">
+                                    <div class="coffee-price" value="${cof[i].price[0]}">${cof[i].price[0].toFixed(2)}</div>
+                                    <div class="coffee-size d-none">${cof[i].size[0]}</div>
+                                </div>
+                                <div class="d-flex justify-content-between col-sm-10">
+                                    <span>Quantity: </span>
+                                    <div>
+                                        <button type="button" class="btn btn-secondary text-center" onclick="quantUpdate(-1)">-</button>
+                                        <input type="number" class="quant-update col-2" value="1" onChange="quantChange()">
+                                        <button type="button" class="btn btn-secondary text-center" onclick="quantUpdate(1)">+</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -95,10 +102,34 @@ for (let i in Mocafe.menu, Mocafe.list, Mocafe.x){
     menuOption(Mocafe.menu[i], Mocafe.list[i], Mocafe.x[i])
 }
 
+function quantUpdate(num){
+    let quantbtn = event.target.parentElement
+    // let parentdiv = quantbtn.parentElement.parentElement.parentElement
+    // let price = parentdiv.getElementsByClassName("coffee-price")[0]
+    let quantInput = quantbtn.getElementsByClassName("quant-update")[0]
+    // console.log(price)
+    // price.defaultValue = price.value
+    quantInput.value = parseInt(quantInput.value) + parseInt(num)
+    if (quantInput.value === isNaN || quantInput.value <= 1){
+        quantInput.value = 1
+    }
+    // price.textContent = parseInt(price.defaultValue) * parseInt(quantInput.value)
+    
+
+   
+}
+
+function quantChange(){
+    let imput = event.target
+    if (imput.value == isNaN || imput.value <= 1){
+        imput.value = 1
+    }
+}
+
+
 const sizeButton = document.getElementsByClassName("btn-size")
 for (let x = 0; x < sizeButton.length; x++) {
     let button = sizeButton[x]
-    console.log(button)
     button.addEventListener("click", function() {
         wew = this.parentNode
         wew1 = wew.getElementsByClassName("coffee-priceList")[0]
@@ -109,108 +140,188 @@ for (let x = 0; x < sizeButton.length; x++) {
         // wew2= wew.getElementsByClassName('coffee-priceList')
         // wew3 = wew.getElementsByClassName('coffee-price')
         // wew3.text = this.value
-        console.log(wew3.textContent)
     })
 }
 
 const addButton = document.getElementsByClassName("btn-add2cart")
 for (let x = 0; x < addButton.length; x++){
         let button = addButton[x]
-        button.addEventListener("click", function() {
-            let cartEntries = JSON.parse(sessionStorage.getItem("allCartEntries"));
-            if (cartEntries == null) cartEntries = []
-            let wiw1 = this.parentNode.parentNode
-            let wiw2 = wiw1.getElementsByClassName("coffee-details")[0]
-            let cartName = wiw2.getElementsByClassName("coffee-name")[0].textContent
-            let cartPrice = wiw2.getElementsByClassName("coffee-price")[0].textContent
-            let cartSize = wiw2.getElementsByClassName("coffee-size")[0].textContent
-            let cartPic = wiw1.getElementsByClassName("coffee-pic")[0].src
-            cartName = `${cartName} ${cartSize}`
-            
-            cartId++
-
-            let cartItems = {
-                id: cartId,
-                name: cartName,
-                price: cartPrice,
-                pic: cartPic
-            }
-
-            sessionStorage.setItem("cartDetails", JSON.stringify(cartItems));
-            cartEntries.push(cartItems);
-            sessionStorage.setItem("idValue", cartId);
-            sessionStorage.setItem("allCartEntries", JSON.stringify(cartEntries));
-            console.log(cartEntries)
-
-            setTimeout(() => {
-                location.reload();
-            }, 100)
-
-            
-
-        })
+        button.addEventListener("click", add2cartFunc)
 }
+
+function add2cartFunc() {
+    let cartEntries = JSON.parse(sessionStorage.getItem("allCartEntries"));
+    if (cartEntries == null) cartEntries = []
+    let button = event.target
+    let wiw1 = this.parentNode.parentNode
+    let wiw2 = wiw1.getElementsByClassName("coffee-details")[0]
+    let cartName = wiw2.getElementsByClassName("coffee-name")[0].textContent
+    let cartPrice = wiw2.getElementsByClassName("coffee-price")[0].textContent
+    let cartSize = wiw2.getElementsByClassName("coffee-size")[0].textContent
+    let cartPic = wiw1.getElementsByClassName("coffee-pic")[0].src
+    cartQuant = wiw2.getElementsByClassName("quant-update")[0].value
+    console.log(cartQuant)
+    cartName = `${cartName} (${cartSize})`
+    
+    cartId++
+    let cartItems = {
+        id: cartId,
+        name: cartName,
+        price: cartPrice,
+        pic: cartPic,
+        quant: cartQuant
+    }
+
+    sessionStorage.setItem("cartDetails", JSON.stringify(cartItems));
+    cartEntries.push(cartItems);
+    sessionStorage.setItem("idValue", cartId);
+    sessionStorage.setItem("allCartEntries", JSON.stringify(cartEntries));
+
+
+    setTimeout(() => {
+        button.disabled = true
+        location.reload();
+        
+    }, 100)
+
+}
+
+
 
 let cartList = sessionStorage.getItem("allCartEntries")
 let allCartEntries = JSON.parse(cartList)
 
-for (let i in allCartEntries){
-    let cartBody = document.querySelector("#cartBody")
-    cartBody.insertAdjacentHTML("beforeend", `
-    <div class="wew mb-3" id="${allCartEntries[i].id}">
-    <div class="d-flex justify-content-between">
-        <div class="d-flex justify-content-start align-items-center">
-            <div class="">
-                <img src="${allCartEntries[i].pic}">
-            </div>
-            <div class="">${allCartEntries[i].name}</div>
-        </div>
-        <div class="">
-            <span onclick="removeItem()"><i class="fa-solid fa-xmark"></i></span>
-        </div>
-    </div>
-    <div class="d-flex justify-content-between ms-5 me-2">
-        <span>Subtotal</span>
-        <span>${parseInt(allCartEntries[i].price).toFixed(2)}</span>
-    </div>
-    <hr class="mb-3">
-</div>
-    `)
-}
+const arr = allCartEntries
 
+const count = {};
+if (arr === null){
+    console.log(arr)
+} else{
+    arr.forEach(element => {
+        if (count.hasOwnProperty(element.name)) {
+            count[element.name] = parseInt(count[element.name]) + parseInt(element.quant);
+          } else {
+            count[element.name] = element.quant;
+          }
+    });
 
-
-function updateTotal() {
-    let total = 0;
-    for (let i in allCartEntries){
-        total = parseFloat(total) + parseFloat(allCartEntries[i].price)
-    }
-    let cartTotal = document.querySelector("#cartTotal")
-    cartTotal.textContent = total.toFixed(2);
     
-}
-updateTotal()
-
-
-
-
-
-function removeItem() {
-    //selects the parentNode of the event
-    let td = event.target.parentElement.parentElement.parentElement.parentElement;
-    console.log(td)
-    // to get the id or row
-    let cartId = td.id;
-    let parent = td.parentElement
-    parent.removeChild(td)
-    console.log(cartId)
-    //to filter the array of objects and update taskEntries2 value
-    allCartEntries = allCartEntries.filter((obj) => obj.id != parseInt(cartId))
-    //to update all entries in local storage
-    sessionStorage.setItem("allCartEntries", JSON.stringify(allCartEntries));
+    const arr2 = getUniqueListBy(allCartEntries, "name")
+    console.log(arr2)
+    
+    for (let x in allCartEntries){
+        console.log(allCartEntries[x])
+    }
+    
+    // 👇️ {one: 3, two: 2, three: 1}
+    console.log(count);
+    
+    const ar = []
+    
+    for (var x in count) {
+    ar.push({ name: x, value: count[x] });
+    }
+    console.log(ar)
+    
+    for (let i in arr2){
+        for (let y in ar){
+            if (arr2[i].name === ar[y].name){
+                arr2[i].quant = ar[y].value
+                arr2[i].price = arr2[i].price * arr2[i].quant
+            }
+        }
+    }
+    sessionStorage.setItem("allcartNow", JSON.stringify(arr2))
+    allin =sessionStorage.getItem("allcartNow")
+    let allCartEntry = JSON.parse(allin)
+    
+    
+    
+    
+    
+    
+    for (let i in allCartEntry){
+        let cartBody = document.querySelector("#cartBody")
+        cartBody.insertAdjacentHTML("beforeend", `
+        <div class="wew mb-3" id="${allCartEntry[i].id}">
+        <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="">
+                    <img src="${allCartEntry[i].pic}">
+                </div>
+                <div class="cartname" id="${allCartEntry[i].name}">x${(allCartEntry[i].quant)} ${allCartEntry[i].name}</div>
+            </div>
+            <div class="">
+                <span onclick="removeItem()"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between ms-5 me-2">
+            <span>Subtotal</span>
+            <span>${parseInt(allCartEntry[i].price).toFixed(2)}</span>
+        </div>
+        <hr class="mb-3">
+    </div>
+        `)
+    }
+    checkOutBtn()
+    console.log(allCartEntry)
+    function checkOutBtn() {
+        let BtnCheckout = document.querySelector("#btn-checkout")
+        if (allCartEntry === null || allCartEntry.length === 0){
+            BtnCheckout.disabled = true;
+            console.log("Wew")
+        } else{
+            BtnCheckout.disabled = false
+            console.log("weiw")
+        }
+    }
+    
+    function updateTotal() {
+        let total = 0;
+        for (let i in allCartEntry){
+            total = parseFloat(total) + parseFloat(allCartEntry[i].price)
+        }
+        let cartTotal = document.querySelector("#cartTotal")
+        cartTotal.textContent = total.toFixed(2);
+        
+    }
     updateTotal()
     
+    
+    function removeItem() {
+        //selects the parentNode of the event
+        let td = event.target.parentElement.parentElement.parentElement.parentElement;
+        console.log(td)
+        // to get the id or row
+        let cartId = td.id;
+        let parent = td.parentElement
+        ts = event.target.parentElement.parentElement
+        ty = ts.parentElement.firstElementChild
+        fuckthishit = ty.lastElementChild.id
+        
+        console.log(fuckthishit)
+        parent.removeChild(td)
+        console.log(cartId)
+        //to filter the array of objects and update taskEntries2 value
+        allCartEntry = allCartEntry.filter((obj) => obj.id != parseInt(cartId))
+        allCartEntries = allCartEntries.filter((obj) => obj.name != fuckthishit)
+        //to update all entries in local storage
+        sessionStorage.setItem("allcartNow", JSON.stringify(allCartEntry));
+        sessionStorage.setItem("allCartEntries", JSON.stringify(allCartEntries))
+        updateTotal()
+        checkOutBtn()
+        console.log(allCartEntry)
+    }
+    
+    function handleQuaintityChange(id, diff){
+        const product = allCartEntry.find(prod=>prod.id===id);
+        if(!product) return;
+        product.quantity+=diff;
+        return true
+     }
+
 }
+
 
 
 
@@ -223,6 +334,6 @@ $('#menu-flters li').on('click', function (){
 });
 
 
-
-
-
+function getUniqueListBy(arr, key) {
+    return [...new Map(arr.map(item => [item[key], item])).values()]
+}
